@@ -141,9 +141,9 @@ void part_6(){
     */
     // Due to problems with problem 2 we based this problem on part 1
     
-	short samples[DELAY];
+    short samples[DELAY];
     short sample;
-	unsigned int i;
+    unsigned int i;
     
     // this program uses polling so Vectors_poll.asm should be added to the project.
     comm_poll();

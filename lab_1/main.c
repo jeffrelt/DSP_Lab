@@ -13,12 +13,11 @@ Uint16 inputsource = DSK6713_AIC23_INPUT_LINEIN; // 0x011
 //	Vectors_poll.asm -> for polling
 
 
-/*
+/*	
 	Generate a ramp/sawtooth wave using the polling method to generate output. Set the output
 	frequency of the AIC23 codec to 8 kHz. Document parameters like the frequency of the
 	generated output and peak to peak value, and include these values in your report. Check these
-	values on an oscilloscope or using the Graph Tool in CCS. [[20]]
-*/
+	values on an oscilloscope or using the Graph Tool in CCS. [[20]] */
 void part1()
 {
 	comm_poll(); // this program uses polling
@@ -34,15 +33,14 @@ void part1()
 }
 
 
-/*
+/*	
 	Generate a sine wave using a lookup table. The lookup table can be generated in MATLAB (using
 	the sin function scaling the output to remove the floating point values), and then included as a
 	header file. Include the MATLAB file(s) you use to generate this table in your report. Set the
 	output frequency of the AIC23 codec to 16 kHz. Keep in mind that a full cycle of a sine wave has
 	to be stored in the table to generate the correct output sequence You must choose your output
 	frequency so that there is no under sampling. Check the waveform on an oscilloscope or using
-	the Graph Tool in CCS. [[30]]
-*/
+	the Graph Tool in CCS. [[30]] */
 void part2()
 {
 	comm_poll(); // this program uses polling
@@ -66,7 +64,6 @@ void part2()
 	}
 }
 
-
 /*
 	Generate a pseudo random sequence using maximum length sequences, and capture the
 	waveform using an oscilloscope or the Graph Tool in CCS. A maximum length sequence uses a
@@ -75,8 +72,7 @@ void part2()
 	factor of (Xn +1) under modulo two addition and multiplication. You can directly use one of the
 	polynomials in [1]. It is advisable to use a polynomial of length greater than 10 so that the
 	repetition time for the sequence is sufficiently high. Implementations in [4] can be directly
-	translated to code with the values changed for a different polynomial. [[50]]
-*/
+	translated to code with the values changed for a different polynomial. [[50]] */
 void part3()
 {
 	comm_poll(); // this program uses polling

@@ -85,16 +85,16 @@ void part3()
 		unsigned short bit14 = i&(1<<14);
 		unsigned short bit12 = i&(1<<12);
 		unsigned short bit3  = i&(1<<3);
-		// shift all over to the 15th bit and xor them all into x
-		unsigned short x = bit15^(bit14<<1)^(bit12<<3)^(bit3<<12);
+		// shift all over to the lsb and xor them all into x
+		unsigned short x = (bit15>>15)^(bit14>>14)^(bit12>>12)^(bit3>>3);
 
 		if(x == 0)
 			output_left_sample(-10000);
 		else
 			output_left_sample(10000);
 		
-		//shift the prior value right with x going to the 15th bit
-		i = (i>>1)|x;
+		//shift the prior value left with x going to the lsb
+		i = (i<<1)|x;
 	}
 }
 

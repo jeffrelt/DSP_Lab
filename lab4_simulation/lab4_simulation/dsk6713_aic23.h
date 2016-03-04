@@ -9,6 +9,8 @@
 #ifndef dsk6713_aic23_h
 #define dsk6713_aic23_h
 
+void comm_poll();
+
 void load(const char* file_name);
 
 short input_left_sample();

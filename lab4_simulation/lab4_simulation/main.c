@@ -21,6 +21,13 @@ Uint16 inputsource = DSK6713_AIC23_INPUT_LINEIN; // 0x011
 #define MAG_THRESHOLD 2000
 #define TIME_THRESHOLD 50
 
+#define P 3
+
+struct coef{
+    float terms[P];
+};
+typedef struct coef Coef;
+
 void isolate(short* word_durations){
 
 	short s_count = 0;
@@ -95,65 +102,69 @@ void isolate(short* word_durations){
 }
 
 
+void getCoeff(Coef* coefs, int count)
+{
+    short word_durations[WORD_COUNT];
+    isolate(word_durations);
+}
+
+#define TEST_SIZE 15
 
 void main()
 {
+    Coef words[TEST_SIZE];
 	comm_poll();
 
-		//printf("******* SPEAKER RECOGNITION *******\n");
-		//fflush(stdout);
-		//return 0;
-		while(1) {
+    while(1) {
 
+        printf("******* SPEAKER RECOGNITION *******\n");
+        printf("1 - Training\n");
+        printf("2 - Testing\n");
+        printf("Please enter your choice:\n");
 
-			//output_left_sample(input_left_sample());
+        int choice = 0;
 
-			printf("******* SPEAKER RECOGNITION *******\n");
-			printf("1 - Training\n");
-			printf("2 - Testing\n");
-			printf("Please enter your choice:\n");
+        scanf("%d",&choice);
 
-			int choice = 0;
+        if(choice == 1) {
 
-			scanf("%d",&choice);
+            int user = 0;
+            printf("For which user do you wanna train (1-3): \n");
+            scanf("%d",&user);
 
-			short word_durations[WORD_COUNT];
-			isolate(word_durations);
+            int ready = 0;
+            do {
+                printf("Please provide the training sound, enter 1 when it is ready \n");
+                scanf("%d",&ready);
+            } while(ready != 1);
 
-			if(choice == 1) {
+            printf("Training sound is sampling...\n");
 
-				int user = 0;
-				printf("For which user do you wanna train (1-3): \n");
-				scanf("%d",&user);
+#ifdef SIMULATION
+            switch(user){
+                case 1: load("user1_train_8k.txt"); break;
+                case 2: load("user2_train_8k.txt"); break;
+                default: load("user3_train_8k.txt");
+            }
+#endif
+            getCoeff(words, TEST_SIZE);
+            //TODO: find mean and covariance for user
 
-				int ready = 0;
-				do {
-					printf("Please provide the training sound, enter 1 when it is ready \n");
-					scanf("%d",&ready);
-				} while(ready != 1);
+        } else if(choice == 2) {
 
-				printf("Training sound is sampling...\n");
+            int ready = 0;
+            do {
+                printf("Please provide the test sound, enter 1 when it is ready \n");
+                scanf("%d",&ready);
+            } while(ready != 1);
 
-				// Sample Voice
-				// Isolate
-				// Train
+            printf("Test sound is sampling... \n");
 
-			} else if(choice == 2) {
+            getCoeff(words, TEST_SIZE);
+            //TODO: Identify
 
-				int ready = 0;
-				do {
-					printf("Please provide the test sound, enter 1 when it is ready \n");
-					scanf("%d",&ready);
-				} while(ready != 1);
-
-				printf("Test sound is sampling... \n");
-
-				// Sample Voice
-				// Isolate
-				// Test
-
-			}
-		}
+        }
+    }
 
 }
 

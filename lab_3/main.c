@@ -4,8 +4,8 @@
 #define DSK6713_AIC23_INPUT_LINEIN 0x0011
 Uint16 inputsource = DSK6713_AIC23_INPUT_LINEIN; // 0x011
 
+// single switch to enable which part of the lab to run
 #define PART4
-
 
 #ifdef PART1
 	#include "firlow.h"
@@ -87,8 +87,6 @@ void main()
             // our count starts from 0 and increments to 2N then loops back to N (over and over)
 		if(++count >= N*2)
 			count -= N;
-
-
 	}
 
 }

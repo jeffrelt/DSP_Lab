@@ -9,9 +9,14 @@
 #ifndef dsk6713_aic23_h
 #define dsk6713_aic23_h
 
+#define DSK6713_AIC23_FREQ_8KHZ 1
+
+typedef unsigned int Uint32;
+typedef unsigned short Uint16;
+
 void comm_poll();
 
-void load(const char* file_name);
+int load(const char* file_name);
 
 short input_left_sample();
 

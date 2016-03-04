@@ -15,13 +15,14 @@ FILE* current_file = NULL;
 
 int load(const char* file_name){
     if(current_file)
-        close(current_file);
-    current_file = open(file_name,"r");
+        fclose(current_file);
+    current_file = fopen(file_name,"r");
+    return current_file != NULL;
 }
 
 short input_left_sample(){
-    short data;
-    while!(fscanf(current_file,"%d",&data))
+    int data;
+    while(!fscanf(current_file,"%d",&data))
         rewind(current_file);
     return data;
 }

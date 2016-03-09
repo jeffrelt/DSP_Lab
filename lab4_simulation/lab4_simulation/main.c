@@ -30,12 +30,12 @@ struct coef{
 typedef struct coef Coef;
 
 struct r{
-    int val[P];
+    long val[P];
 };
 typedef struct r r_struct;
 
 struct R{
-    int val[P][P];
+    long val[P][P];
 };
 typedef struct R R_struct;
 

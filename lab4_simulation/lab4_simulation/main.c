@@ -11,7 +11,6 @@ Uint16 inputsource = DSK6713_AIC23_INPUT_LINEIN; // 0x011
 
 #define SIMULATION
 
-// 512 sample moving average
 
 #define ALPHA .02f
 #define A1 .98f
@@ -196,13 +195,22 @@ void getCoeffs(Coef* coefs, int count)
                     
                     // if so save it
                     int ms = duration*1000/SAMPLE_RATE;
-                    printf("Word duration in samples: %i, in time: %ims\n", duration,ms);
-                    fflush(stdout);
+                    printf("Word duration in samples: %i, in time: %ims. Coefs: ", duration,ms);
+                    
                     
                     findCoeff(&coefs[word_count], &r, &R);
+                    int i;
+                    for(i = 0; i< P; ++i)
+                        printf("%f ",coefs[word_count].val[i]);
+                    
+                    printf("\n");
+                    fflush(stdout);
  
-                    if(++word_count == count)
+                    if(++word_count == count){
+                        printf("Got Coeffs for %d words!\n",count);
+                        fflush(stdout);
                         return;
+                    }
                 } //if( duration > TIME_THRESHOLD ){
                 
             } // default:{
@@ -212,12 +220,21 @@ void getCoeffs(Coef* coefs, int count)
     } // while(1)
 } //void getCoeffs(Coef* coefs, int count)
 
+
+void getProfile(const Coef* words, Coef* mean, Matrix* cov){
+    
+}
+
 #define TEST_SIZE 15
 
 void main()
 {
-    Coef words[TEST_SIZE];
     comm_poll();
+    
+    Coef words[TEST_SIZE];
+    Coef means[3];
+    Matrix cov[3];
+    
     
     while(1) {
         
@@ -252,7 +269,8 @@ void main()
             }
 #endif
             getCoeffs(words, TEST_SIZE);
-            //TODO: find mean and covariance for user
+            
+            getProfile(words, &means[user], &cov[user]);
             
         } else if(choice == 2) {
             

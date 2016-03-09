@@ -199,7 +199,7 @@ void getCoeffs(Coef* coefs, int count)
                     printf("Word duration in samples: %i, in time: %ims. Coefs: ", duration,ms);
                     
                     
-                    findCoeff(&coefs[word_count], &r, &R);
+                    findCoeff(coefs+word_count, &r, &R);
                     int i;
                     for(i = 0; i< P; ++i)
                         printf("%f ",coefs[word_count].val[i]);
@@ -226,9 +226,46 @@ void getProfile(const Coef* words, Coef* mean, Matrix* cov){
     printf("getProfile");
 }
 
-int findUser(const Coef* word, const Coef* means, const Matrix* cov){
-    printf("findUser");
-    return 1;
+float maholanobis_distance(const Coef* word, const Coef* mean, const Matrix* cov){
+    Coef mid, temp;
+    Matrix cov_temp, inverse;
+    float ans = 0;
+    int i,j;
+    for(i = 0; i < P; ++i){
+        mid.val[i] = word->val[i] - mean->val[i];
+        for(j = 0; j < P; ++j){
+            inverse.val[i][j] = 0;
+            cov_temp.val[i][j] = cov->val[i][j];
+        }
+    }
+    Matrix_inverse(&cov_temp, &inverse);
+    
+    for(i = 0; i < P; ++i){
+        temp.val[i] = 0;
+        for(j = 0; j < P; ++j){
+            temp.val[i] = mid.val[i]*inverse.val[i][j];
+        }
+    }
+    
+    for(i = 0; i < P; ++i){
+        ans += temp.val[i]*mid.val[i];
+    }
+    
+    return ans;
+}
+
+int findUser(const Coef* word, const Coef* means, const Matrix* covs){
+    float best_dist = 99999999999;
+    int best_user = 1;
+    int i;
+    for(i = 0;i < NUM_USERS; ++i){
+        float result = maholanobis_distance(word, means+i, covs+i);
+        if(result < best_dist){
+            best_dist = result;
+            best_user = i;
+        }
+    }
+    return i;
 }
 
 
@@ -276,7 +313,7 @@ void main()
             
             getCoeffs(words, TEST_SIZE);
             
-            getProfile(words, &means[user], &cov[user]);
+            getProfile(words, means+user, cov+user);
             
         } else if(choice == 2) {
 
@@ -306,7 +343,7 @@ void main()
             int i;
             int correct = 0;
             for(i = 0; i < TEST_SIZE; ++i){
-                int result = findUser(&words[i],means,cov);
+                int result = findUser(words+i,means,cov);
                 printf("Word %d: user: %d\n",i,result);
                 if(result == user)
                     ++correct;

@@ -22,8 +22,12 @@ int load(const char* file_name){
 
 short input_left_sample(){
     int data;
-    while(!fscanf(current_file,"%d",&data))
+    while( fscanf(current_file,"%i",&data) <= 0 ){
+        printf("EOF reached!\n");
+        fflush(stdout);
         rewind(current_file);
+        clearerr(current_file);
+    }
     return data;
 }
 

@@ -13,100 +13,204 @@ Uint16 inputsource = DSK6713_AIC23_INPUT_LINEIN; // 0x011
 
 // 512 sample moving average
 
-#define N 400
+#define ALPHA .02f
+#define A1 .98f
 
 #define WORD_COUNT 5
 #define SAMPLE_RATE 8000.0f
 
-#define MAG_THRESHOLD 2000
-#define TIME_THRESHOLD 50
+#define MAG_THRESHOLD 200
+#define TIME_THRESHOLD 2000
 
 #define P 3
 
 struct coef{
-    float terms[P];
+    float val[P];
 };
 typedef struct coef Coef;
 
-void isolate(short* word_durations){
-    
-    short s_count = 0;
-    short w_count = 0;
-    long time = 0;
-    short hist[N];
-    long accumulator = 0; // moving average * N
-    short state = 0;
-    long start;
-    
-    printf("Sampling!\n");
-    fflush(stdout);
-    while(1) {
-        unsigned short q_index;
-        if(s_count < N){
-            q_index = s_count;
-            // do not remove samples from accumulator until the queue (hist) is full
+struct r{
+    int val[P];
+};
+typedef struct r r_struct;
+
+struct R{
+    int val[P][P];
+};
+typedef struct R R_struct;
+
+struct matrix{
+    float val[P][P];
+};
+typedef struct matrix Matrix;
+
+int abs(int x){
+    if( x < 0 )
+        return -x;
+    return x;
+}
+
+
+void init_rR(r_struct* r, R_struct* R){
+    int i,j;
+    for(i = 0; i < P; ++i){
+        r->val[i] = 0;
+        for(j = 0; j < P; ++j){
+            R->val[i][j] = 0;
         }
-        else{
-            q_index = s_count - N;
-            // remove the oldest sample
-            accumulator -= hist[q_index];
-        }
-        // get the new sample, rectify it
-        short sample = input_left_sample();
-        if( sample < 0 )
-            sample = -sample;
-        //save to accumulator and the hist
-        accumulator += sample;
-        hist[q_index] = sample;
-        
-        // state machine
-        switch(state)
-        {
-            case 0:{
-                if( accumulator < MAG_THRESHOLD )
-                    break;
-                // our average value is greater than the threshold, set starting time, change state
-                state = 1;
-                start = time;
-            }
-            default:{
-                if( accumulator >= MAG_THRESHOLD )
-                    break;
-                // we are no longer exceding the threshold, change state and find duration
-                state = 0;
-                short duration = time-start;
-                // check if this was long enough to be considered a word
-                if( duration > TIME_THRESHOLD ){
-                    // if so save it
-                    int ms = duration*1000/SAMPLE_RATE;
-                    printf("Word duration: %i\n", ms);
-                    fflush(stdout);
-                    word_durations[w_count] = ms;
-                    ++w_count;
-                    if( w_count == WORD_COUNT ){
-                        printf("Isolated %d words\n", w_count);
-                        return;
-                    }
-                    
-                }
-            }
-        }
-        
-        
-        ++time;
-        if(++s_count >= N*2){
-            s_count -= N;
-        }
-        
     }
 }
 
-
-void getCoeff(Coef* coefs, int count)
-{
-    short word_durations[WORD_COUNT];
-    isolate(word_durations);
+void summ_rR(r_struct* r, R_struct* R, short* x){
+    int i,j;
+    for(i = 0; i < P; ++i){
+        r->val[i] += x[0]*x[i+1];
+        for(j = 0; j < P; ++j){
+            R->val[i][j] += x[i+1]*x[j+1];
+        }
+    }
 }
+
+void Matrix_inverse(Matrix* m, Matrix* inv) {
+    
+    int i, j, k;
+    float temp;
+    
+    for(i = 0; i < P; ++i)
+        for(j = 0; j < P; ++j)
+            if(i == j)
+                inv->val[i][j] = 1;
+            else
+                inv->val[i][j] = 0;
+    
+    for(k = 0; k < P; ++k)
+    {
+        temp = m->val[k][k];
+        for(j = 0; j < P; j++)
+        {
+            m->val[k][j] /= temp;
+            inv->val[k][j] /= temp;
+        }
+        for(i = 0; i < P; i++)
+        {
+            temp = m->val[i][k];
+            for(j = 0; j < P; j++)
+            {
+                if(i == k)
+                    break;
+                m->val[i][j] -= m->val[k][j] * temp;
+                inv->val[i][j] -= inv->val[k][j] * temp;
+            }
+        }
+    }
+    
+}
+
+void matrix_mul_coef(const Matrix* m, const Coef* c, Coef* dest)
+{
+    int i,j;
+    for(i = 0; i < P; ++i)
+    {
+        dest->val[i] = 0;
+        for(j = 0; j < P; ++j)
+        {
+            dest->val[i] += m->val[i][j] * c->val[j];
+        }
+    }
+}
+
+void findCoeff(Coef* coef, const r_struct* r, const R_struct* R){
+    Matrix R_matrix, inverse;
+    Coef r_coef;
+    int i,j;
+    // convert the int based structures into float based
+    for(i = 0; i < P; ++i)
+    {
+        r_coef.val[i] = r->val[i];
+        for(j = 0; j < P; ++j)
+        {
+            R_matrix.val[i][j] = R->val[i][j];
+            inverse.val[i][j] = 0;
+        }
+    }
+    // get the inverse
+    Matrix_inverse(&R_matrix, &inverse);
+    // multiply
+    matrix_mul_coef(&inverse, &r_coef, coef);
+}
+
+void getCoeffs(Coef* coefs, int count)
+{
+    unsigned long sample_count = 0;
+    short x[P+1];
+    float moving_average = 0;
+    short state = 0;
+    unsigned long start;
+    int word_count = 0;
+    r_struct r;
+    R_struct R;
+    
+    printf("Sampling!\n");
+    fflush(stdout);
+    
+    while(1) {
+        
+        short sample = input_left_sample();
+        int i; // shift our x's
+        for(i = P; i >= 0; --i)
+            x[i] = x[i-1];
+        x[0] = sample; //save current
+        
+        // exponential moving average with a very small alpha
+        moving_average = abs(sample)*ALPHA + moving_average*A1;
+        
+        // state machine
+        switch(state){
+            case 0:{
+                if( moving_average >= MAG_THRESHOLD ){
+                    // our average value is greater than the threshold, set starting time, change state
+                    state = 1;
+                    start = sample_count;
+                    
+                    // initialize our r and R, then start accumulating them
+                    init_rR(&r,&R);
+                    summ_rR(&r, &R, x);
+                }
+                    break;
+            }
+            default:{
+                // if exceding the threshold accumulate our R and r
+                if( moving_average >= MAG_THRESHOLD ){
+                    // just accumulate our rR's
+                    summ_rR(&r, &R, x);
+                    
+                    break;
+                }
+                
+                // if not change state and find duration
+                state = 0;
+                int duration = sample_count - start;
+                
+                // check if this was long enough to be considered a word
+                if( duration > TIME_THRESHOLD ){
+                    
+                    // if so save it
+                    int ms = duration*1000/SAMPLE_RATE;
+                    printf("Word duration in samples: %i, in time: %ims\n", duration,ms);
+                    fflush(stdout);
+                    
+                    findCoeff(&coefs[word_count], &r, &R);
+ 
+                    if(++word_count == count)
+                        return;
+                } //if( duration > TIME_THRESHOLD ){
+                
+            } // default:{
+        }// switch(state)
+
+        ++sample_count;
+    } // while(1)
+} //void getCoeffs(Coef* coefs, int count)
 
 #define TEST_SIZE 15
 
@@ -147,7 +251,7 @@ void main()
                 default: load("user3_train_8k.txt");
             }
 #endif
-            getCoeff(words, TEST_SIZE);
+            getCoeffs(words, TEST_SIZE);
             //TODO: find mean and covariance for user
             
         } else if(choice == 2) {
@@ -160,7 +264,7 @@ void main()
             
             printf("Test sound is sampling... \n");
             
-            getCoeff(words, TEST_SIZE);
+            getCoeffs(words, TEST_SIZE);
             //TODO: Identify
             
         }

@@ -7,11 +7,21 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		18150FE61C892556005C9A21 /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 18150FE51C892556005C9A21 /* main.c */; };
 		18150FE91C8926D2005C9A21 /* dsk6713_aic23.c in Sources */ = {isa = PBXBuildFile; fileRef = 18150FE81C8926D2005C9A21 /* dsk6713_aic23.c */; };
+		18150FF61C897B8D005C9A21 /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 18150FF51C897B8D005C9A21 /* main.c */; };
+		18150FFA1C89809C005C9A21 /* dsk6713_aic23.c in Sources */ = {isa = PBXBuildFile; fileRef = 18150FE81C8926D2005C9A21 /* dsk6713_aic23.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		18150FF11C897B8D005C9A21 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
 		18D82E791C892468005522A3 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -24,16 +34,23 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		18150FE51C892556005C9A21 /* main.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = main.c; path = lab4_simulation/main.c; sourceTree = "<group>"; };
-		18150FE81C8926D2005C9A21 /* dsk6713_aic23.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = dsk6713_aic23.c; path = lab4_simulation/dsk6713_aic23.c; sourceTree = "<group>"; };
-		18150FEB1C892701005C9A21 /* dsk6713_aic23.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = dsk6713_aic23.h; path = lab4_simulation/dsk6713_aic23.h; sourceTree = "<group>"; };
-		18150FEC1C89284E005C9A21 /* user1_8k.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = user1_8k.txt; path = lab4_simulation/user1_8k.txt; sourceTree = "<group>"; };
-		18150FED1C89284E005C9A21 /* user2_8k.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = user2_8k.txt; path = lab4_simulation/user2_8k.txt; sourceTree = "<group>"; };
-		18150FEE1C89284E005C9A21 /* user3_8k.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = user3_8k.txt; path = lab4_simulation/user3_8k.txt; sourceTree = "<group>"; };
+		18150FE81C8926D2005C9A21 /* dsk6713_aic23.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = dsk6713_aic23.c; sourceTree = "<group>"; };
+		18150FEB1C892701005C9A21 /* dsk6713_aic23.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = dsk6713_aic23.h; sourceTree = "<group>"; };
+		18150FF31C897B8D005C9A21 /* lab4_simulation */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = lab4_simulation; sourceTree = BUILT_PRODUCTS_DIR; };
+		18150FF51C897B8D005C9A21 /* main.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
+		181510021C906AA1005C9A21 /* user1_test_8k.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = user1_test_8k.txt; sourceTree = "<group>"; };
+		181510031C906B03005C9A21 /* user1_train_8k.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = user1_train_8k.txt; sourceTree = "<group>"; };
 		18D82E7B1C892469005522A3 /* lab_4_simulation */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = lab_4_simulation; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		18150FF01C897B8D005C9A21 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		18D82E781C892468005522A3 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -44,15 +61,22 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		18150FF41C897B8D005C9A21 /* lab4_simulation */ = {
+			isa = PBXGroup;
+			children = (
+				181510031C906B03005C9A21 /* user1_train_8k.txt */,
+				181510021C906AA1005C9A21 /* user1_test_8k.txt */,
+				18150FF51C897B8D005C9A21 /* main.c */,
+				18150FEB1C892701005C9A21 /* dsk6713_aic23.h */,
+				18150FE81C8926D2005C9A21 /* dsk6713_aic23.c */,
+			);
+			path = lab4_simulation;
+			sourceTree = "<group>";
+		};
 		18D82E721C892468005522A3 = {
 			isa = PBXGroup;
 			children = (
-				18150FEC1C89284E005C9A21 /* user1_8k.txt */,
-				18150FED1C89284E005C9A21 /* user2_8k.txt */,
-				18150FEE1C89284E005C9A21 /* user3_8k.txt */,
-				18150FEB1C892701005C9A21 /* dsk6713_aic23.h */,
-				18150FE81C8926D2005C9A21 /* dsk6713_aic23.c */,
-				18150FE51C892556005C9A21 /* main.c */,
+				18150FF41C897B8D005C9A21 /* lab4_simulation */,
 				18D82E7C1C892469005522A3 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -61,6 +85,7 @@
 			isa = PBXGroup;
 			children = (
 				18D82E7B1C892469005522A3 /* lab_4_simulation */,
+				18150FF31C897B8D005C9A21 /* lab4_simulation */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -68,6 +93,23 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		18150FF21C897B8D005C9A21 /* lab4_simulation */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 18150FF71C897B8D005C9A21 /* Build configuration list for PBXNativeTarget "lab4_simulation" */;
+			buildPhases = (
+				18150FEF1C897B8D005C9A21 /* Sources */,
+				18150FF01C897B8D005C9A21 /* Frameworks */,
+				18150FF11C897B8D005C9A21 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = lab4_simulation;
+			productName = lab4_simulation;
+			productReference = 18150FF31C897B8D005C9A21 /* lab4_simulation */;
+			productType = "com.apple.product-type.tool";
+		};
 		18D82E7A1C892468005522A3 /* lab_4_simulation */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 18D82E821C892469005522A3 /* Build configuration list for PBXNativeTarget "lab_4_simulation" */;
@@ -94,6 +136,9 @@
 				LastUpgradeCheck = 0720;
 				ORGANIZATIONNAME = "Jeffrey Thompson";
 				TargetAttributes = {
+					18150FF21C897B8D005C9A21 = {
+						CreatedOnToolsVersion = 7.2.1;
+					};
 					18D82E7A1C892468005522A3 = {
 						CreatedOnToolsVersion = 7.2.1;
 					};
@@ -112,23 +157,46 @@
 			projectRoot = "";
 			targets = (
 				18D82E7A1C892468005522A3 /* lab_4_simulation */,
+				18150FF21C897B8D005C9A21 /* lab4_simulation */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
+		18150FEF1C897B8D005C9A21 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				18150FFA1C89809C005C9A21 /* dsk6713_aic23.c in Sources */,
+				18150FF61C897B8D005C9A21 /* main.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		18D82E771C892468005522A3 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				18150FE91C8926D2005C9A21 /* dsk6713_aic23.c in Sources */,
-				18150FE61C892556005C9A21 /* main.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
+		18150FF81C897B8D005C9A21 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		18150FF91C897B8D005C9A21 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
 		18D82E801C892469005522A3 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -225,6 +293,14 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		18150FF71C897B8D005C9A21 /* Build configuration list for PBXNativeTarget "lab4_simulation" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				18150FF81C897B8D005C9A21 /* Debug */,
+				18150FF91C897B8D005C9A21 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
 		18D82E761C892468005522A3 /* Build configuration list for PBXProject "lab4_simulation" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

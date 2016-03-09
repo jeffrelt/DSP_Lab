@@ -22,6 +22,12 @@ Uint16 inputsource = DSK6713_AIC23_INPUT_LINEIN; // 0x011
 #define TIME_THRESHOLD 2000
 
 #define P 3
+/*
+ 
+ P=2 accuracy 86%
+ p=3 88.8%
+ 
+ */
 
 #define NUM_USERS 3
 

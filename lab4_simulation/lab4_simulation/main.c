@@ -199,7 +199,7 @@ void getCoeffs(Coef* coefs, int count)
                     printf("Word duration in samples: %i, in time: %ims. Coefs: ", duration,ms);
                     
                     
-                    findCoeff(&coefs[word_count], &r, &R);
+                    findCoeff(coefs+word_count, &r, &R);
                     int i;
                     for(i = 0; i< P; ++i)
                         printf("%f ",coefs[word_count].val[i]);
@@ -222,13 +222,89 @@ void getCoeffs(Coef* coefs, int count)
 } //void getCoeffs(Coef* coefs, int count)
 
 
-void getProfile(const Coef* words, Coef* mean, Matrix* cov){
-    printf("getProfile");
+void getProfile(const Coef* words, Coef* mean, Matrix* cov, int word_count){
+    int i,j,count;
+    Coef temp;
+    for(i = 0; i < P; ++i){
+        mean->val[i] = 0;
+        for(j = 0; j < P; ++j){
+            cov->val[i][j] = 0;
+        }
+    }
+    for(count = 0; count < word_count; ++count)
+    {
+        for(i = 0; i < P; ++i){
+            mean->val[i] += words[count].val[i];
+        }
+    }
+    printf("Mean: \n");
+    for(i = 0; i < P; ++i){
+        mean->val[i] /= word_count;
+        printf("%f\t", mean->val[i]);
+    }
+    
+    for(count = 0; count < word_count; ++count)
+    {
+        for(i = 0; i < P; ++i){
+            temp.val[i] = words[count].val[i] - mean->val[i];
+        }
+        for(i = 0; i < P; ++i){
+            for(j = 0; j < P; ++j){
+                cov->val[i][j] += temp.val[i]*temp.val[j];
+            }
+        }
+    }
+    printf("\nCov: \n");
+    for(i = 0; i < P; ++i){
+        for(j = 0; j < P; ++j){
+            cov->val[i][j] /= word_count;
+            printf("%f\t", cov->val[i][j]);
+        }
+        printf("\n");
+    }
+    printf("\n");
 }
 
-int findUser(const Coef* word, const Coef* means, const Matrix* cov){
-    printf("findUser");
-    return 1;
+float maholanobis_distance(const Coef* word, const Coef* mean, const Matrix* cov){
+    Coef mid, temp;
+    Matrix cov_temp, inverse;
+    float ans = 0;
+    int i,j;
+    for(i = 0; i < P; ++i){
+        mid.val[i] = word->val[i] - mean->val[i];
+        for(j = 0; j < P; ++j){
+            inverse.val[i][j] = 0;
+            cov_temp.val[i][j] = cov->val[i][j];
+        }
+    }
+    Matrix_inverse(&cov_temp, &inverse);
+    
+    for(i = 0; i < P; ++i){
+        temp.val[i] = 0;
+        for(j = 0; j < P; ++j){
+            temp.val[i] += mid.val[j]*inverse.val[i][j];
+        }
+    }
+    
+    for(i = 0; i < P; ++i){
+        ans += temp.val[i]*mid.val[i];
+    }
+    
+    return ans;
+}
+
+int findUser(const Coef* word, const Coef* means, const Matrix* covs){
+    float best_dist = 99999999999;
+    int best_user = 0;
+    int i;
+    for(i = 0;i < NUM_USERS; ++i){
+        float result = maholanobis_distance(word, means+i, covs+i);
+        if(result < best_dist){
+            best_dist = result;
+            best_user = i;
+        }
+    }
+    return best_user;
 }
 
 
@@ -275,8 +351,7 @@ void main()
             printf("Training sound is sampling...\n");
             
             getCoeffs(words, TEST_SIZE);
-            
-            getProfile(words, &means[user], &cov[user]);
+            getProfile(words, means+user-1, cov+user-1, TEST_SIZE);
             
         } else if(choice == 2) {
 
@@ -306,7 +381,7 @@ void main()
             int i;
             int correct = 0;
             for(i = 0; i < TEST_SIZE; ++i){
-                int result = findUser(&words[i],means,cov);
+                int result = findUser(words+i,means,cov)+1;
                 printf("Word %d: user: %d\n",i,result);
                 if(result == user)
                     ++correct;

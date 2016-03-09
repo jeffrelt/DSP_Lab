@@ -23,6 +23,8 @@ Uint16 inputsource = DSK6713_AIC23_INPUT_LINEIN; // 0x011
 
 #define P 3
 
+#define NUM_USERS 3
+
 struct coef{
     float val[P];
 };
@@ -149,7 +151,6 @@ void getCoeffs(Coef* coefs, int count)
     r_struct r;
     R_struct R;
     
-    printf("Sampling!\n");
     fflush(stdout);
     
     while(1) {
@@ -222,8 +223,14 @@ void getCoeffs(Coef* coefs, int count)
 
 
 void getProfile(const Coef* words, Coef* mean, Matrix* cov){
-    
+    printf("getProfile");
 }
+
+int findUser(const Coef* word, const Coef* means, const Matrix* cov){
+    printf("findUser");
+    return 1;
+}
+
 
 #define TEST_SIZE 15
 
@@ -232,8 +239,8 @@ void main()
     comm_poll();
     
     Coef words[TEST_SIZE];
-    Coef means[3];
-    Matrix cov[3];
+    Coef means[NUM_USERS];
+    Matrix cov[NUM_USERS];
     
     
     while(1) {
@@ -250,41 +257,61 @@ void main()
         if(choice == 1) {
             
             int user = 0;
-            printf("For which user do you wanna train (1-3): \n");
+            printf("For which user do you want to train (1-%d): \n",NUM_USERS);
             scanf("%d",&user);
-            
-            int ready = 0;
-            do {
-                printf("Please provide the training sound, enter 1 when it is ready \n");
-                scanf("%d",&ready);
-            } while(ready != 1);
-            
-            printf("Training sound is sampling...\n");
-            
 #ifdef SIMULATION
             switch(user){
                 case 1: load("user1_train_8k.txt"); break;
                 case 2: load("user2_train_8k.txt"); break;
                 default: load("user3_train_8k.txt");
             }
+#else
+            int ready = 0;
+            do {
+                printf("Please provide the training sound, enter 1 when it is ready \n");
+                scanf("%d",&ready);
+            } while(ready != 1);
 #endif
+            printf("Training sound is sampling...\n");
+            
             getCoeffs(words, TEST_SIZE);
             
             getProfile(words, &means[user], &cov[user]);
             
         } else if(choice == 2) {
-            
+
+            int user = 0;
+            printf("Which user is speaking? (1-%d): ",NUM_USERS);
+            scanf("%d",&user);
+#ifdef SIMULATION
+            switch(user){
+                case 1: load("user1_test_8k.txt"); break;
+                case 2: load("user2_test_8k.txt"); break;
+                default: load("user3_test_8k.txt");
+            }
+#else
             int ready = 0;
             do {
                 printf("Please provide the test sound, enter 1 when it is ready \n");
                 scanf("%d",&ready);
             } while(ready != 1);
-            
+#endif
             printf("Test sound is sampling... \n");
+            fflush(stdout);
             
             getCoeffs(words, TEST_SIZE);
-            //TODO: Identify
             
+            printf("Finding user... \n");
+            
+            int i;
+            int correct = 0;
+            for(i = 0; i < TEST_SIZE; ++i){
+                int result = findUser(&words[i],means,cov);
+                printf("Word %d: user: %d\n",i,result);
+                if(result == user)
+                    ++correct;
+            }
+            printf("\nCorrect %d out of %d\n", correct, TEST_SIZE);
         }
     }
     

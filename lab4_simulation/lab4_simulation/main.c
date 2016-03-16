@@ -366,9 +366,9 @@ void main()
             scanf("%d",&user);
 #ifdef SIMULATION
             switch(user){
-                case 1: load("user1_test_8k.txt"); break;
-                case 2: load("user2_test_8k.txt"); break;
-                default: load("user3_test_8k.txt");
+                case 1: load("user1_train_8k.txt"); break;
+                case 2: load("user2_train_8k.txt"); break;
+                default: load("user3_train_8k.txt");
             }
 #else
             int ready = 0;

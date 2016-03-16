@@ -12,12 +12,12 @@ SECTIONS
 {
   .EXT_RAM :> SDRAM
   .vectors :> IVECS	/*in vector file*/
-  .text    :> IRAM	/*Created by C Compiler*/
+  .text    :> SDRAM	/*Created by C Compiler*/
   .bss     :> IRAM
-  .cinit   :> IRAM
-  .stack   :> IRAM
+  .cinit   :> SDRAM
+  .stack   :> SDRAM
   .sysmem  :> IRAM
-  .const   :> IRAM
+  .const   :> SDRAM
   .switch  :> IRAM
   .far     :> SDRAM
   .cio     :> IRAM
